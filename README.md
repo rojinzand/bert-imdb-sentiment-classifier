@@ -124,6 +124,37 @@ This consistent behavior highlights the importance of validation monitoring and 
 
 ---
 
+## Model Behavior & Limitations
+
+Beyond reporting aggregate accuracy, I evaluated the model on a collection of manually designed edge cases to better understand **how it makes predictions**, not just **how often it is correct**.
+
+### Negation
+
+The model handled negated negative expressions (e.g., *"not very bad"*) more reliably than negated positive expressions (e.g., *"not very good"*). This behavior remained consistent across multiple adjective pairs (good/bad and happy/sad), suggesting a systematic weakness in handling certain forms of negation.
+
+### Contrastive Sentences
+
+For sentences containing the conjunction **"but"**, the model consistently placed greater emphasis on the clause that followed it. Examples:
+
+- *"The movie was boring but excellent."* → Positive
+- *"The movie was excellent but boring."* → Negative
+
+Replacing **"but"** with **"however"** or separating the clauses with punctuation produced a noticeably weaker effect, suggesting that the model learned **"but"** as a particularly strong sentiment cue from the IMDb training data.
+
+### Lexical Bias
+
+Certain highly negative words—especially *"terrible"*—strongly influenced predictions regardless of sentence position or competing positive words. Other strong negative adjectives (e.g., *"atrocious"*) did not consistently display the same behavior, indicating that the model relies heavily on specific lexical cues rather than treating all negative words equally.
+
+### Confidence Calibration
+
+The model frequently assigned probabilities above **90%**, even for deliberately ambiguous or mixed-sentiment sentences. This suggests that its confidence estimates are not always well calibrated, likely due to binary training labels and the relatively small fine-tuning dataset.
+
+### Overall Observation
+
+Although the model achieved **87.2% test accuracy** on the IMDb benchmark, these experiments show that high aggregate performance does not necessarily imply robust language understanding. In the manually designed examples tested here, the model often relied on strong lexical and structural cues—such as specific words or the conjunction **"but"**—rather than consistently interpreting the full semantic context of a sentence. These observations complement the quantitative evaluation by highlighting behaviors that are not visible from accuracy metrics alone.
+
+---
+
 ## Example Prediction
 
 Input
@@ -135,7 +166,7 @@ I absolutely loved this movie.
 Prediction
 
 ```text
-Positive (98.3%)
+Positive (99.8%)
 ```
 
 ---
